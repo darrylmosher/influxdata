@@ -1,10 +1,4 @@
 #!/bin/bash
-#Clone or download: https://darrylmosher.io/influxdata
-
-#Verify script is being run as root user
-if [ `whoami` != "root" ]; then 
-echo "Must run as root." ; exit 1
-fi
 
 #Set Required Variables
 services="influx telegraf chronograf kapacitor"
