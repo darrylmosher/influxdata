@@ -1,0 +1,4 @@
+sudo: true
+script: test/run
+language: c
+os: linux
