@@ -1,8 +1,16 @@
 sudo: required
 script: ./influxsetup.sh
 language: c
+
 os: linux
-notifications:
+  dist: xenial
+
+  notifications:
   email:
     on_success: change
     on_failure: always
+
+addons:
+  apt:
+    sources: 
+      -influxdb: 'https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable'
