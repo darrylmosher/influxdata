@@ -42,6 +42,7 @@ echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stabl
 #Install stack - debian
 echo "Installing Services" >&3
 echo "" >&3
+sudo apt-get update
 sudo apt-get install $services -y >> /tmp/$logfile
 fi
 
