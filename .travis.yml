@@ -1,3 +1,9 @@
+before_script:
+  - wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+  - echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+  - sudo apt-get update -qq
+  - sudo apt-get install influxdb telegraf chronograf kapacitor -y
+
 sudo: required
 script: ./influxsetup.sh
 language: c
