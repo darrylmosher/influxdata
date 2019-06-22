@@ -8,7 +8,7 @@ kapacitorConfig="/etc/kapacitor/kapacitor.conf"
 ipaddress="$(ifconfig | egrep -o "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1)"
 now="$( date '+%F_%H:%M:%S' )"
 logfile="stacksetupout$now.log"
-ostype="$(cat /etc/os-release | grep 'debian')"
+ostype="$(cat /etc/os-release | grep 'rhel')"
 
 #Create log ile
 touch /tmp/$logfile
@@ -16,10 +16,10 @@ exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3 15 RETURN
 exec 1>/tmp/$logfile 2>&1
 echo "Log Location: /tmp/$logfile" >&3
-echo ""
+echo "" >&3
 
 #Add Influx repository
-if [ ostype = "" ]; then
+if [ ostype != "" ]; then
 cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
 [influxdb]
 name = InfluxDB Repository - RHEL \$releasever
