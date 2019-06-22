@@ -79,9 +79,9 @@ echo "" >&3
 #Specify Telegraf output location and InfluxDB credentials
 echo "Updating Configurations" >&3
 echo "" >&3
-sed -i 's+# urls = ["http://127.0.0.1:8086"]+   urls = ["http://127.0.0.1:8086"]+g' $telegrafConfig
-sed -i 's+# username = "telegraf"+  username = "admin"+g' $telegrafConfig
-sed -i 's+# password = "metricsmetricsmetricsmetrics"+  password = "influxadmin"+g' $telegrafConfig
+sudo sed -i 's+# urls = ["http://127.0.0.1:8086"]+   urls = ["http://127.0.0.1:8086"]+g' $telegrafConfig
+sudo sed -i 's+# username = "telegraf"+  username = "admin"+g' $telegrafConfig
+sudo sed -i 's+# password = "metricsmetricsmetricsmetrics"+  password = "influxadmin"+g' $telegrafConfig
 
 #Restart services
 echo "Restarting Services" >&3
