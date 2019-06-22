@@ -1,23 +1,25 @@
 #!/bin/bash
 
 #Set Required Variables
-services="influx telegraf chronograf kapacitor"
+services="influxdb telegraf chronograf kapacitor"
 influxdbConfig="/etc/influxdb/influxdb.conf"
 telegrafConfig="/etc/telegraf/telegraf.conf"
 kapacitorConfig="/etc/kapacitor/kapacitor.conf"
 ipaddress="$(ifconfig | egrep -o "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1)"
 now="$( date '+%F_%H:%M:%S' )"
 logfile="stacksetupout$now.log"
+ostype="$(cat /etc/os-release | grep 'debian')"
 
 #Create log ile
 touch /tmp/$logfile
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3 15 RETURN
 exec 1>/tmp/$logfile 2>&1
-echo "Log Location: /tmp/$logfile"
+echo "Log Location: /tmp/$logfile" >&3
 echo ""
 
 #Add Influx repository
+if [ ostype = "" ]; then
 cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
 [influxdb]
 name = InfluxDB Repository - RHEL \$releasever
@@ -27,14 +29,25 @@ gpgcheck = 1
 gpgkey = https://repos.influxdata.com/influxdb.key
 EOF
 
-#Install stack
+#Install stack - rhel/centos
 echo "Installing Services" >&3
 echo "" >&3
-yum -y install influxdb telegraf kapacitor chronograf
+yum -y install $services
+
+else
+wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+source /etc/lsb-release
+echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+
+#Install stack - debian
+echo "Installing Services" >&3
+echo "" >&3
+sudo apt-get install $services -y >> /tmp/$logfile
+fi
 
 #Verify installation succeeded
-yumexit=$?
-if [ $yumexit -ne 0 ]; then 
+installexit=$?
+if [ $installexit -ne 0 ]; then 
 echo "Installation Failed. Review /tmp/$logfile" >&3 ; exit 1
 fi
 
@@ -77,18 +90,7 @@ for service in $services; do
     sleep 1
 done	
 
-#Final Steps
+#Final Step
 echo "Complete" >&3
 echo "" >&3
 echo "Visit http://$ipaddress:8888 to finish setting up your stack" >&3
-echo "Additional Information: https://docs.influxdata.com/chronograf/v1.7/introduction/installation/" >&3
-echo "" >&3
-echo "Admin Credentials" >&3
-echo "User: admin Password: influxadmin" >&3
-echo "Update credentials with GraphQL: SET PASSWORD FOR 'admin' = 'newpass'" >&3
-echo "Additional Information: https://docs.influxdata.com/influxdb/v1.7/administration/authentication_and_authorization/#user-management-commands" >&3
-echo "" >&3
-echo "By default, HTTP authentication is disabled" >&3
-echo "Enable authentication by setting the auth-enabled option to true in the [http] section of $influxdbConfig" >&3
-echo "A username and password must also be defined in the [[influxdb]] section of $kapacitorConfig" >&3
-echo "Additional Information: https://docs.influxdata.com/influxdb/v1.7/administration/authentication_and_authorization/" >&3
