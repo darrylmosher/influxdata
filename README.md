@@ -1,4 +1,4 @@
-# influxdata [![Build Status](https://travis-ci.org/darrylmosher/influxdata.svg?branch=master)](https://travis-ci.org/darrylmosher/influxdata)
+# influxsetup.sh [![Build Status](https://travis-ci.org/darrylmosher/influxdata.svg?branch=master)](https://travis-ci.org/darrylmosher/influxdata)
 
 A script to install and configure a complete Influx stack
 
@@ -9,6 +9,56 @@ A script to install and configure a complete Influx stack
 2. Run `~/.influx/influxsetup.sh
 
 ## Usage
+
+"Additional Information: https://docs.influxdata.com/chronograf/v1.7/introduction/installation/" 
+
+### Admin Credentials
+
+User: admin Password: influxadmin
+
+Update credentials with GraphQL: 
+```graphql
+SET PASSWORD FOR 'admin' = 'newpass'
+```
+Additional Information: https://docs.influxdata.com/influxdb/v1.7/administration/authentication_and_authorization/#user-management-commands
+
+### HTTP Authentication
+
+By default, HTTP authentication is disabled.
+
+Enable authentication by setting the auth-enabled option to true in the [http] section of /etc/influxdb/influxdb.conf
+```shell
+[http]
+  # Determines whether HTTP endpoint is enabled.
+   enabled = true
+
+  # Determines whether the Flux query endpoint is enabled.
+  # flux-enabled = false
+
+  # Determines whether the Flux query logging is enabled.
+  # flux-log-enabled = false
+
+  # The bind address used by the HTTP service.
+  # bind-address = ":8086"
+
+  # Determines whether user authentication is enabled over HTTP/HTTPS.
+    auth-enabled = true
+```
+
+If HTTP authentication is enabled, then a username and password must also be defined in the [[influxdb]] section of /etc/kapacitor/kapacitor.conf
+```shell
+    [[influxdb]]
+  # Connect to an InfluxDB cluster
+  # Kapacitor can subscribe, query and write to this cluster.
+  # Using InfluxDB is not required and can be disabled.
+  enabled = true
+  default = true
+  name = "localhost"
+  urls = ["http://localhost:8086"]
+  username = "admin"
+  password = "influxadmin"
+```
+Additional Information: https://docs.influxdata.com/influxdb/v1.7/administration/authentication_and_authorization/
 
 ## Contributing
 
