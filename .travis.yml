@@ -2,7 +2,6 @@ sudo: required
 script: ./influxsetup.sh
 language: c
 os: linux
-  dist: xenial
   notifications:
   email:
     on_success: change
