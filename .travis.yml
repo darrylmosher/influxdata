@@ -10,4 +10,4 @@ os: linux
 addons:
   apt:
     sources: 
-      - influxdb: 'https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable'
+      - sourceline: 'deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable'
