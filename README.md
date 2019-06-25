@@ -11,8 +11,8 @@ A script to install and configure a complete Influx stack
 ## Usage
 
 ```shell
-]# ./stacksetup.sh 
-Log Location: /tmp/stacksetupout2019-06-25_20:57:07.log
+# ./stacksetup.sh 
+Log Location: /tmp/stacksetupout2000-00-00_00:00:00.log
 
 Installing Services
 
@@ -26,7 +26,7 @@ Restarting Services
 
 Complete
 
-Visit http://172.31.105.25:8888 to finish setting up your stack
+Visit http://x.x.x.x:8888 to finish setting up your stack
 ```
 
 ### Admin Credentials
