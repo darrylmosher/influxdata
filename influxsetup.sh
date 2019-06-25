@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #Set Required Variables
 services="influxdb telegraf chronograf kapacitor"
 influxdbConfig="/etc/influxdb/influxdb.conf"
@@ -8,7 +7,7 @@ kapacitorConfig="/etc/kapacitor/kapacitor.conf"
 ipaddress="$(ifconfig | egrep -o "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1)"
 now="$( date '+%F_%H:%M:%S' )"
 logfile="stacksetupout$now.log"
-ostype="$(cat /etc/os-release | grep 'rhel')"
+ostype="$(sudo apt)"
 
 #Create log ile
 touch /tmp/$logfile
@@ -19,7 +18,7 @@ echo "Log Location: /tmp/$logfile" >&3
 echo "" >&3
 
 #Add Influx repository
-if [ ostype != "" ]; then
+if [ ostype = 'sudo: apt: command not found' ]; then
 cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
 [influxdb]
 name = InfluxDB Repository - RHEL \$releasever
