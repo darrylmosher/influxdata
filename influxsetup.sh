@@ -7,7 +7,7 @@ kapacitorConfig="/etc/kapacitor/kapacitor.conf"
 ipaddress="$(ifconfig | egrep -o "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1)"
 now="$( date '+%F_%H:%M:%S' )"
 logfile="stacksetupout$now.log"
-ostype="$(sudo apt)"
+ostype="$(cat /etc/os-release | grep 'ID_LIKE=')"
 
 #Create log ile
 touch /tmp/$logfile
@@ -15,37 +15,38 @@ exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3 15 RETURN
 exec 1>/tmp/$logfile 2>&1
 echo "Log Location: /tmp/$logfile" >&3
-echo "" >&3
 
-#Add Influx repository
-if [ ostype = 'sudo: apt: command not found' ]; then
-cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
-[influxdb]
-name = InfluxDB Repository - RHEL \$releasever
-baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
-enabled = 1
-gpgcheck = 1
-gpgkey = https://repos.influxdata.com/influxdb.key
+case $ostype in
+    *rhel)
+        #Add Influx repository
+        cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
+        [influxdb]
+        name = InfluxDB Repository - RHEL \$releasever
+        baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
+        enabled = 1
+        gpgcheck = 1
+        gpgkey = https://repos.influxdata.com/influxdb.key
 EOF
+        #Install stack - rhel/centos
+        echo "Installing Services" >&3
+        echo "" >&3
+        yum -y install $service
+    ;;
+    *debian)
+        #Add Influx repository
+        wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+        source /etc/lsb-release
+        echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
 
-#Install stack - rhel/centos
-echo "Installing Services" >&3
-echo "" >&3
-yum -y install $services
-
-else
-wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
-source /etc/lsb-release
-echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
-
-#Install stack - debian
-echo "Installing Services" >&3
-echo "" >&3
-sudo apt-get update
-sudo apt-get install $services -y >> /tmp/$logfile
-fi
+        #Install stack - debian
+        echo "Installing Services" >&3
+        echo "" >&3
+        sudo apt-get update
+        sudo apt-get install $services -y >> /tmp/$logfile
+esac
 
 #Verify installation succeeded
+echo "" >&3
 installexit=$?
 if [ $installexit -ne 0 ]; then 
 echo "Installation Failed. Review /tmp/$logfile" >&3 ; exit 1
