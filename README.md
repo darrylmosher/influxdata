@@ -10,7 +10,24 @@ A script to install and configure a complete Influx stack
 
 ## Usage
 
-"Additional Information: https://docs.influxdata.com/chronograf/v1.7/introduction/installation/" 
+```shell
+]# ./stacksetup.sh 
+Log Location: /tmp/stacksetupout2019-06-25_20:57:07.log
+
+Installing Services
+
+Starting Services
+
+Created Admin user
+
+Updating Configurations
+
+Restarting Services
+
+Complete
+
+Visit http://172.31.105.25:8888 to finish setting up your stack
+```
 
 ### Admin Credentials
 
